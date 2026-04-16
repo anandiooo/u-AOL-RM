@@ -4,11 +4,11 @@ from typing import Dict, List, Sequence, Tuple
 
 
 DEFAULT_EMOTION_KEYWORDS: Dict[str, List[str]] = {
-    "stressed": ["stres", "stressed", "tertekan", "kewalahan"],
-    "anxious": ["cemas", "anxious", "panik", "khawatir"],
-    "sad": ["sedih", "down", "murung", "kecewa"],
-    "hopeless": ["putus asa", "hopeless"],
-    "positive": ["lega", "membaik", "semangat"],
+    "stressed": ["stres", "stressed", "tertekan", "kewalahan", "overwhelmed", "pressure", "burned out", "burnout"],
+    "anxious": ["cemas", "anxious", "panik", "khawatir", "worried", "nervous", "panic", "scared", "afraid", "fear"],
+    "sad": ["sedih", "down", "murung", "kecewa", "depressed", "useless", "worthless", "empty", "lonely", "crying", "tears", "miserable", "unhappy"],
+    "hopeless": ["putus asa", "hopeless", "give up", "no point", "want to die", "bunuh diri", "suicide", "end it all", "can't go on", "no hope"],
+    "positive": ["lega", "membaik", "semangat", "happy", "better", "grateful", "relieved", "hopeful", "good"],
 }
 
 
