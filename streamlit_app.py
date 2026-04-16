@@ -180,7 +180,7 @@ def _render_dashboard() -> None:
             risk_score = float(latest["risk"]["score"])
             risk_level = str(latest["risk"]["level"])
             st.metric("Risk Level", risk_level.upper())
-            st.metric("Risk Score", f"{risk_score:.2f}")
+            st.metric("Risk Score", f"{risk_score * 100:.0f}%")
             st.progress(min(max(risk_score, 0.0), 1.0))
             st.markdown(
                 f"<span style='color:{_risk_color(risk_level)}; font-weight:bold;'>Top reasons contributing to risk:</span>",
