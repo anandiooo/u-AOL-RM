@@ -19,7 +19,7 @@ def test_tpcg_builder_adds_nodes_and_edges() -> None:
         emotion="stressed",
         emotion_score=0.9,
         triggers=["deadline"],
-        mechanisms=["overthinking"],
+        crashouts=["overthinking"],
         symptoms=["insomnia"],
     )
 

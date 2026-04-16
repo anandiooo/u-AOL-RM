@@ -55,12 +55,12 @@ class TemporalCausalChatbot:
             emotion_score=emotion_score,
             symptoms=entity_payload["symptoms"],
             triggers=entity_payload["triggers"],
-            mechanisms=entity_payload["mechanisms"],
+            crashouts=entity_payload["crashouts"],
             evidence={
                 "emotion": emotion_evidence.get(emotion, []),
                 "symptoms": entity_payload["evidence"]["symptoms"],
                 "triggers": entity_payload["evidence"]["triggers"],
-                "mechanisms": entity_payload["evidence"]["mechanisms"],
+                "crashouts": entity_payload["evidence"]["crashouts"],
             },
         )
 

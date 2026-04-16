@@ -77,19 +77,19 @@ class TPCGBuilder:
         graph = self._get_graph(turn.user_id)
 
         trigger_nodes = self._add_nodes(graph, turn, extraction.triggers, "trigger")
-        mechanism_nodes = self._add_nodes(graph, turn, extraction.mechanisms, "mechanism")
+        crashout_nodes = self._add_nodes(graph, turn, extraction.crashouts, "crashout")
         symptom_nodes = self._add_nodes(graph, turn, extraction.symptoms, "symptom")
         emotion_node = self._add_nodes(graph, turn, [extraction.emotion], "emotion")[0]
 
         for trigger_node in trigger_nodes:
-            for mechanism_node in mechanism_nodes:
-                self._add_edge(graph, trigger_node, mechanism_node, "leads_to", 1.0, 0.0)
+            for crashout_node in crashout_nodes:
+                self._add_edge(graph, trigger_node, crashout_node, "leads_to", 1.0, 0.0)
 
-        for mechanism_node in mechanism_nodes:
+        for crashout_node in crashout_nodes:
             for symptom_node in symptom_nodes:
-                self._add_edge(graph, mechanism_node, symptom_node, "worsens", 1.0, 0.0)
+                self._add_edge(graph, crashout_node, symptom_node, "worsens", 1.0, 0.0)
 
-        if trigger_nodes and symptom_nodes and not mechanism_nodes:
+        if trigger_nodes and symptom_nodes and not crashout_nodes:
             for trigger_node in trigger_nodes:
                 for symptom_node in symptom_nodes:
                     self._add_edge(graph, trigger_node, symptom_node, "direct_effect", 0.9, 0.0)
@@ -97,12 +97,12 @@ class TPCGBuilder:
         for symptom_node in symptom_nodes:
             self._add_edge(graph, symptom_node, emotion_node, "associated_with", 1.0, 0.0)
 
-        if not symptom_nodes and (trigger_nodes or mechanism_nodes):
-            for source_node in trigger_nodes + mechanism_nodes:
+        if not symptom_nodes and (trigger_nodes or crashout_nodes):
+            for source_node in trigger_nodes + crashout_nodes:
                 self._add_edge(graph, source_node, emotion_node, "associated_with", 0.6, 0.0)
 
         self._add_temporal_edges(turn.user_id, graph, symptom_nodes + [emotion_node])
-        self._update_history(turn.user_id, graph, trigger_nodes + mechanism_nodes + symptom_nodes + [emotion_node])
+        self._update_history(turn.user_id, graph, trigger_nodes + crashout_nodes + symptom_nodes + [emotion_node])
 
     def _add_temporal_edges(self, user_id: str, graph: nx.DiGraph, target_nodes: List[str]) -> None:
         for target_node in target_nodes:

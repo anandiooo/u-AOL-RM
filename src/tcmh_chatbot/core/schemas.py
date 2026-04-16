@@ -18,7 +18,7 @@ class ExtractionResult(BaseModel):
     emotion_score: float = 0.0
     symptoms: List[str] = Field(default_factory=list)
     triggers: List[str] = Field(default_factory=list)
-    mechanisms: List[str] = Field(default_factory=list)
+    crashouts: List[str] = Field(default_factory=list)
     evidence: Dict[str, List[str]] = Field(default_factory=dict)
 
 

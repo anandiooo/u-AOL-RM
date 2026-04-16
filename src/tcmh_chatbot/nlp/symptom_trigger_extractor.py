@@ -15,7 +15,7 @@ DEFAULT_LEXICONS: Dict[str, List[str]] = {
         "boss",
         "project",
     ],
-    "mechanisms": [
+    "crashouts": [
         "insomnia",
         "3 am",
         "can't shut brain off",
@@ -34,7 +34,7 @@ class SymptomTriggerExtractor:
         merged = {bucket: list(values) for bucket, values in DEFAULT_LEXICONS.items()}
 
         if lexicons:
-            for bucket in ("symptoms", "triggers", "mechanisms"):
+            for bucket in ("symptoms", "triggers", "crashouts"):
                 if bucket in lexicons:
                     merged[bucket] = list(lexicons[bucket])
 
@@ -56,19 +56,19 @@ class SymptomTriggerExtractor:
 
         symptoms_raw = self._match_terms(lowered, self.lexicons["symptoms"])
         triggers_raw = self._match_terms(lowered, self.lexicons["triggers"])
-        mechanisms_raw = self._match_terms(lowered, self.lexicons["mechanisms"])
+        crashouts_raw = self._match_terms(lowered, self.lexicons["crashouts"])
 
         symptoms = self._canonicalize(symptoms_raw)
         triggers = self._canonicalize(triggers_raw)
-        mechanisms = self._canonicalize(mechanisms_raw)
+        crashouts = self._canonicalize(crashouts_raw)
 
         return {
             "symptoms": symptoms,
             "triggers": triggers,
-            "mechanisms": mechanisms,
+            "crashouts": crashouts,
             "evidence": {
                 "symptoms": symptoms_raw,
                 "triggers": triggers_raw,
-                "mechanisms": mechanisms_raw,
+                "crashouts": crashouts_raw,
             },
         }

@@ -11,7 +11,7 @@ def test_rule_based_predictor_flags_medium_or_high_risk() -> None:
         emotion_score=0.9,
         symptoms=["insomnia", "low mood"],
         triggers=["deadline"],
-        mechanisms=["overthinking"],
+        crashouts=["overthinking"],
     )
     graph_stats = GraphStats(node_count=10, edge_count=15, density=0.28, avg_degree=3.0)
 
