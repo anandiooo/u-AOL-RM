@@ -85,10 +85,10 @@ def _risk_color(level: str) -> str:
 def _render_dashboard() -> None:
     st.set_page_config(page_title="Temporal Causal Mental Health Chatbot", layout="wide")
     st.title("Temporal Causal Mental Health Chatbot")
-    st.caption("Prototype dashboard for NLP extraction, temporal causal graph memory, and explainable early warning.")
+    st.caption("A proactive, causal-aware mental health support system with Explainable AI.")
 
     with st.sidebar:
-        st.header("Session")
+        st.header("Session Settings")
         user_id = st.text_input("User ID", value=st.session_state.active_user_id)
         st.session_state.active_user_id = user_id.strip() or "student_01"
 
@@ -104,27 +104,56 @@ def _render_dashboard() -> None:
             st.session_state.turn_history = []
             st.rerun()
 
-    input_col, status_col = st.columns([2, 1])
-    with input_col:
-        st.subheader("Input Conversation Turn")
-        user_text = st.text_area(
-            "User message",
-            placeholder="Contoh: Aku stres karena deadline dan jadi susah tidur.",
-            height=120,
-        )
-        submit = st.button("Process Turn", type="primary")
+    # Structure into columns for a dashboard feel
+    main_col, side_col = st.columns([2, 1])
 
-        if submit:
-            if not user_text.strip():
-                st.warning("Please enter a message first.")
-            else:
-                processed = _process_turn(st.session_state.active_user_id, user_text.strip())
-                st.success(
-                    f"Turn processed: emotion={processed['extraction']['emotion']} risk={processed['risk']['level']}"
-                )
+    with main_col:
+        st.subheader("Conversation")
+        history = _history_for_user(st.session_state.active_user_id)
 
-    with status_col:
-        st.subheader("Current Risk")
+        # Display chat history
+        for item in history:
+            with st.chat_message("user"):
+                st.write(item["turn"]["text"])
+            with st.chat_message("assistant"):
+                emo = item["extraction"]["emotion"]
+                risk_lvl = item["risk"]["level"]
+                st.markdown(f"*Detected emotion:* **{emo.upper()}** | *Risk:* **{risk_lvl.upper()}**")
+
+        # Chat input
+        if prompt := st.chat_input("Tell me what you are feeling today..."):
+            with st.chat_message("user"):
+                st.write(prompt)
+
+            processed = _process_turn(st.session_state.active_user_id, prompt)
+            with st.chat_message("assistant"):
+                emo = processed["extraction"]["emotion"]
+                risk_lvl = processed["risk"]["level"]
+                st.markdown(f"*Detected emotion:* **{emo.upper()}** | *Risk:* **{risk_lvl.upper()}**")
+
+        st.divider()
+
+        st.subheader("Temporal Personal Causal Graph")
+        graph_payload = st.session_state.engine.get_user_graph(st.session_state.active_user_id)
+        if graph_payload["nodes"]:
+            json_path = st.session_state.engine.export_user_graph_json(st.session_state.active_user_id)
+            html_path = st.session_state.engine.export_user_xai_html(st.session_state.active_user_id)
+
+            st.download_button(
+                label="Download Graph JSON",
+                data=Path(json_path).read_bytes(),
+                file_name=Path(json_path).name,
+                mime="application/json",
+            )
+
+            html_content = Path(html_path).read_text(encoding="utf-8")
+            components.html(html_content, height=750, scrolling=True)
+            st.caption("Visual explanation of underlying triggers, mechanisms, and symptoms.")
+        else:
+            st.info("No data yet. Start a conversation to build the causal graph.")
+
+    with side_col:
+        st.subheader("Current Risk Assesment")
         latest = _latest_for_user(st.session_state.active_user_id)
         if latest:
             risk_score = float(latest["risk"]["score"])
@@ -133,93 +162,46 @@ def _render_dashboard() -> None:
             st.metric("Risk Score", f"{risk_score:.2f}")
             st.progress(min(max(risk_score, 0.0), 1.0))
             st.markdown(
-                f"<span style='color:{_risk_color(risk_level)}'>Top reasons:</span>",
+                f"<span style='color:{_risk_color(risk_level)}; font-weight:bold;'>Top reasons contributing to risk:</span>",
                 unsafe_allow_html=True,
             )
             for reason in latest["risk"].get("reasons", []):
-                st.write(f"- {reason}")
+                st.markdown(f"- {reason}")
         else:
-            st.info("No processed turns yet for this user.")
+            st.info("Start chatting to see risk assessment.")
 
-    st.divider()
-    st.subheader("Extraction Summary")
-    latest = _latest_for_user(st.session_state.active_user_id)
-    if latest:
-        extraction = latest["extraction"]
-        stat1, stat2, stat3 = st.columns(3)
-        stat1.metric("Emotion", extraction["emotion"])
-        stat2.metric("Emotion Score", f"{float(extraction['emotion_score']):.2f}")
-        stat3.metric("Graph Nodes", latest["graph_stats"]["node_count"])
+        st.divider()
 
-        detail1, detail2, detail3 = st.columns(3)
-        with detail1:
+        st.subheader("Entity Extraction Summary")
+        if latest:
+            extraction = latest["extraction"]
+            stat1, stat2 = st.columns(2)
+            stat1.metric("Emotion", extraction["emotion"].title())
+            stat2.metric("Nodes Extracted", latest["graph_stats"]["node_count"])
+
             st.markdown("**Triggers**")
-            if extraction["triggers"]:
-                for item in extraction["triggers"]:
-                    st.write(f"- {item}")
-            else:
-                st.write("- none")
+            for item in extraction["triggers"] or ["*none*"]: st.markdown(f"- {item}")
 
-        with detail2:
             st.markdown("**Mechanisms**")
-            if extraction["mechanisms"]:
-                for item in extraction["mechanisms"]:
-                    st.write(f"- {item}")
-            else:
-                st.write("- none")
+            for item in extraction["mechanisms"] or ["*none*"]: st.markdown(f"- {item}")
 
-        with detail3:
             st.markdown("**Symptoms**")
-            if extraction["symptoms"]:
-                for item in extraction["symptoms"]:
-                    st.write(f"- {item}")
-            else:
-                st.write("- none")
-    else:
-        st.info("Submit a turn to see extraction output.")
+            for item in extraction["symptoms"] or ["*none*"]: st.markdown(f"- {item}")
 
-    st.divider()
-    st.subheader("Temporal Personal Causal Graph (XAI)")
-    graph_payload = st.session_state.engine.get_user_graph(st.session_state.active_user_id)
-    if graph_payload["nodes"]:
-        json_path = st.session_state.engine.export_user_graph_json(st.session_state.active_user_id)
-        html_path = st.session_state.engine.export_user_xai_html(st.session_state.active_user_id)
-
-        st.download_button(
-            label="Download Graph JSON",
-            data=Path(json_path).read_bytes(),
-            file_name=Path(json_path).name,
-            mime="application/json",
-            use_container_width=False,
-        )
-
-        html_content = Path(html_path).read_text(encoding="utf-8")
-        components.html(html_content, height=760, scrolling=True)
-        st.caption(f"Graph files saved to: {json_path} and {html_path}")
-    else:
-        st.info("No graph yet. Process a conversation turn to build TPCG.")
-
-    st.divider()
-    st.subheader("Processed Turn History")
-    history = _history_for_user(st.session_state.active_user_id)
-    if history:
-        for item in reversed(history[-10:]):
-            turn = item["turn"]
-            extraction = item["extraction"]
-            risk = item["risk"]
-            with st.expander(f"{turn['timestamp']} | {turn['turn_id']} | risk={risk['level']}"):
-                st.write(turn["text"])
-                st.write(
-                    {
-                        "emotion": extraction["emotion"],
-                        "triggers": extraction["triggers"],
-                        "mechanisms": extraction["mechanisms"],
-                        "symptoms": extraction["symptoms"],
-                        "risk": risk,
-                    }
-                )
-    else:
-        st.info("History is empty for this user.")
+            st.divider()
+            st.subheader("Raw History")
+            for item in reversed(history[-5:]):
+                t = item["turn"]
+                e = item["extraction"]
+                with st.expander(f"{t['timestamp']} | Emotion: {e['emotion']}"):
+                    st.write("**Text:**", t["text"])
+                    st.json({
+                        "triggers": e["triggers"],
+                        "mechanisms": e["mechanisms"],
+                        "symptoms": e["symptoms"]
+                    })
+        else:
+            st.info("Process a turn to view extraction details.")
 
 
 def main() -> None:

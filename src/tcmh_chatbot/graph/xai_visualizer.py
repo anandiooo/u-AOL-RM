@@ -13,11 +13,11 @@ except Exception:  # pragma: no cover - optional dependency fallback
 
 
 NODE_COLORS = {
-    "trigger": "#f59e0b",
-    "mechanism": "#06b6d4",
-    "symptom": "#ef4444",
-    "emotion": "#8b5cf6",
-    "unknown": "#9ca3af",
+    "trigger": {"background": "#fef3c7", "border": "#d97706"},
+    "mechanism": {"background": "#ccfbf1", "border": "#0891b2"},
+    "symptom": {"background": "#fee2e2", "border": "#dc2626"},
+    "emotion": {"background": "#ede9fe", "border": "#7c3aed"},
+    "unknown": {"background": "#f1f5f9", "border": "#64748b"},
 }
 
 
@@ -66,26 +66,56 @@ class XAIVisualizer:
               "edges": {
                 "smooth": {
                   "enabled": true,
-                  "type": "dynamic"
+                  "type": "dynamic",
+                  "roundness": 0.5
+                },
+                "color": {
+                  "color": "#94a3b8",
+                  "highlight": "#475569",
+                  "hover": "#64748b"
                 },
                 "font": {
-                  "size": 14,
+                  "size": 15,
                   "face": "Tahoma",
-                  "align": "horizontal"
-                }
+                  "align": "horizontal",
+                  "strokeWidth": 3,
+                  "strokeColor": "#f8fafc",
+                  "color": "#334155"
+                },
+                "width": 2
               },
               "nodes": {
                 "font": {
-                  "size": 15,
-                  "face": "Tahoma"
+                  "size": 16,
+                  "face": "Tahoma",
+                  "color": "#0f172a"
                 },
-                "shape": "dot",
-                "size": 20
+                "shape": "box",
+                "borderWidth": 2,
+                "borderWidthSelected": 4,
+                "shadow": {
+                  "enabled": true,
+                  "color": "rgba(0,0,0,0.15)",
+                  "size": 10,
+                  "x": 3,
+                  "y": 3
+                },
+                "margin": 10
               },
               "physics": {
+                "barnesHut": {
+                  "gravitationalConstant": -30000,
+                  "centralGravity": 0.1,
+                  "springLength": 250,
+                  "springConstant": 0.05
+                },
                 "stabilization": {
                   "iterations": 200
                 }
+              },
+              "interaction": {
+                "hover": true,
+                "tooltipDelay": 200
               }
             }
             """
