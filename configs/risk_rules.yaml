@@ -1,0 +1,27 @@
+symptom_weights:
+  insomnia: 0.26
+  sulit tidur: 0.24
+  lelah: 0.16
+  hilang fokus: 0.18
+  low mood: 0.22
+  mood turun: 0.22
+
+trigger_weights:
+  deadline: 0.18
+  ujian: 0.16
+  tekanan akademik: 0.20
+  konflik keluarga: 0.20
+  masalah finansial: 0.18
+  kesepian: 0.16
+
+emotion_weights:
+  neutral: 0.05
+  positive: 0.0
+  stressed: 0.15
+  anxious: 0.19
+  sad: 0.21
+  hopeless: 0.30
+
+thresholds:
+  medium: 0.35
+  high: 0.65

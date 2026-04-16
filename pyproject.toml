@@ -1,0 +1,35 @@
+[project]
+name = "temporal-causal-mental-health-chatbot"
+version = "0.1.0"
+description = "Template for a temporal causal mental health chatbot using NLP, TPCG, and explainable AI"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Research Template" }
+]
+dependencies = [
+  "streamlit>=1.44.0",
+  "pydantic>=2.8.0",
+  "networkx>=3.3",
+  "pyvis>=0.3.2",
+  "pyyaml>=6.0.1",
+  "python-dateutil>=2.9.0",
+  "scikit-learn>=1.5.0"
+]
+
+[project.optional-dependencies]
+ml = [
+  "transformers>=4.44.0",
+  "datasets>=2.20.0",
+  "torch>=2.3.0",
+  "accelerate>=0.33.0"
+]
+dev = [
+  "pytest>=8.3.0",
+  "ruff>=0.6.4",
+  "mypy>=1.11.1"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

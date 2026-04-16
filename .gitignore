@@ -1,0 +1,31 @@
+# Python cache and build
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Tooling cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Notebook and system files
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# Runtime outputs
+outputs/*.json
+outputs/*.html
+outputs/*.png
+
+# Local env
+.env

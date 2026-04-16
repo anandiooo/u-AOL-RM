@@ -1,0 +1,59 @@
+language: id
+time_window_hours: 168
+
+emotion_keywords:
+  stressed:
+    - stres
+    - stressed
+    - tertekan
+    - deadline
+    - kewalahan
+  anxious:
+    - cemas
+    - anxious
+    - takut
+    - panik
+    - khawatir
+  sad:
+    - sedih
+    - down
+    - murung
+    - kosong
+  hopeless:
+    - putus asa
+    - hopeless
+    - tidak sanggup
+  positive:
+    - lega
+    - tenang
+    - membaik
+    - semangat
+
+lexicons:
+  symptoms:
+    - insomnia
+    - sulit tidur
+    - susah tidur
+    - fatigue
+    - lelah
+    - capek terus
+    - hilang fokus
+    - sulit konsentrasi
+    - low mood
+    - mood turun
+    - nafsu makan turun
+  triggers:
+    - deadline
+    - ujian
+    - tugas
+    - konflik keluarga
+    - masalah finansial
+    - biaya kuliah
+    - kesepian
+    - tekanan akademik
+  mechanisms:
+    - overthinking
+    - ruminasi
+    - menghindar
+    - isolasi diri
+    - begadang
