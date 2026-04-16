@@ -13,9 +13,9 @@ except Exception:  # pragma: no cover - optional dependency fallback
 
 
 NODE_COLORS = {
-    "trigger": {"background": "#fef3c7", "border": "#d97706"},
-    "mechanism": {"background": "#ccfbf1", "border": "#0891b2"},
-    "symptom": {"background": "#fee2e2", "border": "#dc2626"},
+    "trigger": {"background": "#fee2e2", "border": "#dc2626"},
+    "mechanism": {"background": "#fef3c7", "border": "#d97706"},
+    "symptom": {"background": "#dbeafe", "border": "#2563eb"},
     "emotion": {"background": "#ede9fe", "border": "#7c3aed"},
     "unknown": {"background": "#f1f5f9", "border": "#64748b"},
 }

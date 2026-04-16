@@ -6,12 +6,10 @@ emotion_keywords:
     - stres
     - stressed
     - tertekan
-    - deadline
     - kewalahan
   anxious:
     - cemas
     - anxious
-    - takut
     - panik
     - khawatir
   sad:
@@ -22,32 +20,32 @@ emotion_keywords:
   hopeless:
     - putus asa
     - hopeless
-    - tidak sanggup
   positive:
     - lega
-    - tenang
     - membaik
     - semangat
 
 lexicons:
   symptoms:
-    - insomnia
-    - sulit tidur
-    - susah tidur
-    - fatigue
-    - lelah
-    - capek terus
-    - hilang fokus
-    - sulit konsentrasi
+    - depression
+    - depressed
+    - useless
     - low mood
-    - mood turun
-    - nafsu makan turun
+    - can't get out of bed
+    - lelah
   triggers:
     - deadline
+    - boss
+    - project
     - ujian
     - tugas
     - konflik keluarga
-    - masalah finansial
+  mechanisms:
+    - insomnia
+    - overthinking
+    - 3 am
+    - can't shut brain off
+    - staring at ceiling
     - biaya kuliah
     - kesepian
     - tekanan akademik

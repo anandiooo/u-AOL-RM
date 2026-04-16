@@ -83,9 +83,9 @@ def _risk_color(level: str) -> str:
 
 
 def _render_dashboard() -> None:
-    st.set_page_config(page_title="Temporal Causal Mental Health Chatbot", layout="wide")
-    st.title("Temporal Causal Mental Health Chatbot")
-    st.caption("A proactive, causal-aware mental health support system with Explainable AI.")
+    st.set_page_config(page_title="IMPLIKASI | Causal Mental Health Bot", layout="wide")
+    st.title("IMPLIKASI Insight Engine")
+    st.caption("A 'Detective' Causal Mental Health Support System. Instead of just reacting, IMPLIKASI silently maps out the root cause (Triggers), mechanisms, and crashes (Symptoms).")
 
     with st.sidebar:
         st.header("Session Settings")
@@ -118,10 +118,20 @@ def _render_dashboard() -> None:
             with st.chat_message("assistant"):
                 emo = item["extraction"]["emotion"]
                 risk_lvl = item["risk"]["level"]
-                st.markdown(f"*Detected emotion:* **{emo.upper()}** | *Risk:* **{risk_lvl.upper()}**")
+
+                st.markdown("**IMPLIKASI (Silent Processing):**")
+
+                if item["extraction"]["triggers"]:
+                    st.markdown(f"- **Detects Entity / Event:** `{', '.join(item['extraction']['triggers'])}`")
+                if item["extraction"]["mechanisms"]:
+                    st.markdown(f"- **Detects Mechanism:** `{', '.join(item['extraction']['mechanisms'])}`")
+                if item["extraction"]["symptoms"]:
+                    st.markdown(f"- **Detects Symptom:** `{', '.join(item['extraction']['symptoms'])}`")
+                st.markdown(f"- **Detects Emotion:** `{emo.upper()}`")
+                st.markdown("- ***Logs Node & Analyzes Time Lag, Creates Causal Link!***")
 
         # Chat input
-        if prompt := st.chat_input("Tell me what you are feeling today..."):
+        if prompt := st.chat_input("I'm so stressed. My boss just dumped a huge project..."):
             with st.chat_message("user"):
                 st.write(prompt)
 
@@ -129,7 +139,17 @@ def _render_dashboard() -> None:
             with st.chat_message("assistant"):
                 emo = processed["extraction"]["emotion"]
                 risk_lvl = processed["risk"]["level"]
-                st.markdown(f"*Detected emotion:* **{emo.upper()}** | *Risk:* **{risk_lvl.upper()}**")
+
+                st.markdown("**IMPLIKASI (Silent Processing):**")
+
+                if processed["extraction"]["triggers"]:
+                    st.markdown(f"- **Detects Entity / Event:** `{', '.join(processed['extraction']['triggers'])}`")
+                if processed["extraction"]["mechanisms"]:
+                    st.markdown(f"- **Detects Mechanism:** `{', '.join(processed['extraction']['mechanisms'])}`")
+                if processed["extraction"]["symptoms"]:
+                    st.markdown(f"- **Detects Symptom:** `{', '.join(processed['extraction']['symptoms'])}`")
+                st.markdown(f"- **Detects Emotion:** `{emo.upper()}`")
+                st.markdown("- ***Logs Node & Analyzes Time Lag, Creates Causal Link!***")
 
         st.divider()
 
@@ -147,6 +167,7 @@ def _render_dashboard() -> None:
             )
 
             html_content = Path(html_path).read_text(encoding="utf-8")
+            st.markdown("**(Red: Root Cause/Trigger | Yellow: Mechanism | Blue: Crash/Symptom)**")
             components.html(html_content, height=750, scrolling=True)
             st.caption("Visual explanation of underlying triggers, mechanisms, and symptoms.")
         else:
@@ -179,27 +200,14 @@ def _render_dashboard() -> None:
             stat1.metric("Emotion", extraction["emotion"].title())
             stat2.metric("Nodes Extracted", latest["graph_stats"]["node_count"])
 
-            st.markdown("**Triggers**")
+            st.markdown("<span style='color:#dc2626; font-weight:bold;'>Root Cause (Triggers)</span>", unsafe_allow_html=True)
             for item in extraction["triggers"] or ["*none*"]: st.markdown(f"- {item}")
 
-            st.markdown("**Mechanisms**")
+            st.markdown("<span style='color:#d97706; font-weight:bold;'>Mechanisms</span>", unsafe_allow_html=True)
             for item in extraction["mechanisms"] or ["*none*"]: st.markdown(f"- {item}")
 
-            st.markdown("**Symptoms**")
+            st.markdown("<span style='color:#2563eb; font-weight:bold;'>Symptoms (Crash)</span>", unsafe_allow_html=True)
             for item in extraction["symptoms"] or ["*none*"]: st.markdown(f"- {item}")
-
-            st.divider()
-            st.subheader("Raw History")
-            for item in reversed(history[-5:]):
-                t = item["turn"]
-                e = item["extraction"]
-                with st.expander(f"{t['timestamp']} | Emotion: {e['emotion']}"):
-                    st.write("**Text:**", t["text"])
-                    st.json({
-                        "triggers": e["triggers"],
-                        "mechanisms": e["mechanisms"],
-                        "symptoms": e["symptoms"]
-                    })
         else:
             st.info("Process a turn to view extraction details.")
 

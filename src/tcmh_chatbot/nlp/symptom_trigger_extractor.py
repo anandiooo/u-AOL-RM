@@ -5,44 +5,27 @@ from typing import Dict, List, Sequence
 
 DEFAULT_LEXICONS: Dict[str, List[str]] = {
     "symptoms": [
-        "insomnia",
-        "sulit tidur",
-        "susah tidur",
-        "lelah",
-        "fatigue",
-        "capek terus",
-        "hilang fokus",
-        "sulit konsentrasi",
-        "low mood",
-        "mood turun",
+        "depression",
+        "depressed",
+        "useless",
+        "stay in bed",
     ],
     "triggers": [
         "deadline",
-        "ujian",
-        "tugas",
-        "konflik keluarga",
-        "masalah finansial",
-        "biaya kuliah",
-        "kesepian",
-        "tekanan akademik",
+        "boss",
+        "project",
     ],
     "mechanisms": [
-        "overthinking",
-        "ruminasi",
-        "menghindar",
-        "isolasi diri",
-        "begadang",
+        "insomnia",
+        "3 am",
+        "can't shut brain off",
     ],
 }
 
 
 CANONICAL_MAP: Dict[str, str] = {
-    "sulit tidur": "insomnia",
-    "susah tidur": "insomnia",
-    "capek terus": "lelah",
-    "fatigue": "lelah",
-    "sulit konsentrasi": "hilang fokus",
-    "mood turun": "low mood",
+    "depressed": "depression",
+    "can't shut my brain off": "overthinking"
 }
 
 
