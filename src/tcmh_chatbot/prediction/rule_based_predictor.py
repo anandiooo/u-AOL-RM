@@ -49,15 +49,21 @@ class RuleBasedRiskPredictor:
         score = 0.0
         reasons: List[Tuple[float, str]] = []
 
+        symptom_total_weight = 0.0
         for symptom in extraction.symptoms:
             weight = float(self.symptom_weights.get(symptom, 0.08))
             score += weight
-            reasons.append((weight, f"symptom:{symptom}"))
+            symptom_total_weight += weight
+        if extraction.symptoms:
+            reasons.append((symptom_total_weight, f"symptom: {', '.join(extraction.symptoms)}"))
 
+        trigger_total_weight = 0.0
         for trigger in extraction.triggers:
             weight = float(self.trigger_weights.get(trigger, 0.07))
             score += weight
-            reasons.append((weight, f"trigger:{trigger}"))
+            trigger_total_weight += weight
+        if extraction.triggers:
+            reasons.append((trigger_total_weight, f"trigger: {', '.join(extraction.triggers)}"))
 
         emotion_weight = float(self.emotion_weights.get(extraction.emotion, 0.05))
         emotion_contribution = emotion_weight * max(0.5, extraction.emotion_score)
