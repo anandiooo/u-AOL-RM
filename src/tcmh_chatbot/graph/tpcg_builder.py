@@ -53,6 +53,13 @@ class TPCGBuilder:
     def _make_node_id(turn_id: str, node_type: str, label: str, index: int) -> str:
         return f"{turn_id}:{node_type}:{_slug(label)}:{index}"
 
+    def _find_existing_node(self, graph: nx.DiGraph, node_type: str, label: str) -> str | None:
+        """Return the ID of an existing node with the same type and label, if any."""
+        for node_id, attrs in graph.nodes(data=True):
+            if attrs.get("node_type") == node_type and attrs.get("label") == label:
+                return node_id
+        return None
+
     def _add_nodes(
         self,
         graph: nx.DiGraph,
@@ -62,15 +69,23 @@ class TPCGBuilder:
     ) -> List[str]:
         node_ids: List[str] = []
         for index, label in enumerate(labels):
-            node_id = self._make_node_id(turn.turn_id, node_type, label, index)
-            graph.add_node(
-                node_id,
-                node_type=node_type,
-                label=label,
-                timestamp=turn.timestamp.isoformat(),
-                turn_id=turn.turn_id,
-            )
-            node_ids.append(node_id)
+            # Reuse an existing node with the same type and label
+            existing = self._find_existing_node(graph, node_type, label)
+            if existing:
+                # Update timestamp to the latest turn
+                graph.nodes[existing]["timestamp"] = turn.timestamp.isoformat()
+                graph.nodes[existing]["turn_id"] = turn.turn_id
+                node_ids.append(existing)
+            else:
+                node_id = self._make_node_id(turn.turn_id, node_type, label, index)
+                graph.add_node(
+                    node_id,
+                    node_type=node_type,
+                    label=label,
+                    timestamp=turn.timestamp.isoformat(),
+                    turn_id=turn.turn_id,
+                )
+                node_ids.append(node_id)
         return node_ids
 
     def add_turn(self, turn: ConversationTurn, extraction: ExtractionResult) -> None:
