@@ -1,8 +1,10 @@
+"""Risk prediction modules for early warning scoring."""
+
 from __future__ import annotations
 
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
-from tcmh_chatbot.core.schemas import ExtractionResult, GraphStats, RiskEstimate
+from tcmh_chatbot.schemas import ExtractionResult, GraphStats, RiskEstimate
 
 
 DEFAULT_SYMPTOM_WEIGHTS = {
@@ -85,3 +87,18 @@ class RuleBasedRiskPredictor:
 
         ranked_reasons = [reason for _, reason in sorted(reasons, key=lambda item: item[0], reverse=True) if _ > 0.0]
         return RiskEstimate(score=round(score, 4), level=level, reasons=ranked_reasons[:4])
+
+
+class GNNRiskPredictorStub:
+    """Stub module to mark where GNN-based early warning can be integrated."""
+
+    def fit(self, graph_sequences: Any, labels: Any) -> None:
+        raise NotImplementedError(
+            "GNN predictor is intentionally left as a research extension. "
+            "Implement training with PyTorch Geometric or DGL as needed."
+        )
+
+    def predict(self, graph_sequence: Any) -> float:
+        raise NotImplementedError(
+            "GNN predictor is intentionally left as a research extension."
+        )

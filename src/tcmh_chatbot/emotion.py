@@ -1,3 +1,5 @@
+"""Emotion detection module using keyword-based matching."""
+
 from __future__ import annotations
 
 from typing import Dict, List, Sequence, Tuple

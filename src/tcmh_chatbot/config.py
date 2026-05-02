@@ -1,3 +1,5 @@
+"""Configuration loading utilities."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,10 +9,12 @@ import yaml
 
 
 def project_root() -> Path:
-    return Path(__file__).resolve().parents[3]
+    """Get the root directory of the project."""
+    return Path(__file__).resolve().parents[2]
 
 
 def _load_yaml(path: Path) -> Dict[str, Any]:
+    """Load YAML configuration file."""
     if not path.exists():
         return {}
 
@@ -24,10 +28,12 @@ def _load_yaml(path: Path) -> Dict[str, Any]:
 
 
 def load_model_config(path: Optional[str] = None) -> Dict[str, Any]:
+    """Load model configuration from YAML."""
     config_path = Path(path) if path else project_root() / "configs" / "model_config.yaml"
     return _load_yaml(config_path)
 
 
 def load_risk_rules(path: Optional[str] = None) -> Dict[str, Any]:
+    """Load risk rules configuration from YAML."""
     rules_path = Path(path) if path else project_root() / "configs" / "risk_rules.yaml"
     return _load_yaml(rules_path)

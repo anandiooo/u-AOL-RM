@@ -1,3 +1,5 @@
+"""Entity extraction for symptoms, triggers, and mechanisms."""
+
 from __future__ import annotations
 
 from typing import Dict, List, Sequence
@@ -30,6 +32,8 @@ CANONICAL_MAP: Dict[str, str] = {
 
 
 class SymptomTriggerExtractor:
+    """Extracts symptoms, triggers, and mechanisms from text using lexicon matching."""
+
     def __init__(self, lexicons: Dict[str, Sequence[str]] | None = None) -> None:
         merged = {bucket: list(values) for bucket, values in DEFAULT_LEXICONS.items()}
 

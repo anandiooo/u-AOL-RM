@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from tcmh_chatbot.core.schemas import ConversationTurn, ExtractionResult
-from tcmh_chatbot.graph.tpcg_builder import TPCGBuilder
+from tcmh_chatbot.graph import TPCGBuilder
+from tcmh_chatbot.schemas import ConversationTurn, ExtractionResult
 
 
 def test_tpcg_builder_adds_nodes_and_edges() -> None:

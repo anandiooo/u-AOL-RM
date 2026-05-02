@@ -6,13 +6,13 @@ import sys
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC_PATH = PROJECT_ROOT / "src"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SRC_PATH = Path(__file__).resolve().parents[1]
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from tcmh_chatbot.chatbot.engine import TemporalCausalChatbot
-from tcmh_chatbot.core.schemas import ProcessTurnRequest
+from tcmh_chatbot.engine import TemporalCausalChatbot
+from tcmh_chatbot.schemas import ProcessTurnRequest
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--input",
         type=Path,
-        default=PROJECT_ROOT / "data" / "sample" / "sample_conversations.jsonl",
+        default=SRC_PATH / "data" / "sample" / "sample_conversations.jsonl",
         help="Path to JSONL conversation file",
     )
     return parser.parse_args()

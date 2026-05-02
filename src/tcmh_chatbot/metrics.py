@@ -1,3 +1,5 @@
+"""Evaluation metrics for the TCMH system."""
+
 from __future__ import annotations
 
 from typing import Iterable, Sequence, Tuple
@@ -10,6 +12,7 @@ def classification_metrics(
     y_pred: Sequence[str],
     average: str = "macro",
 ) -> dict:
+    """Calculate classification metrics (precision, recall, F1, accuracy)."""
     precision, recall, f1, _ = precision_recall_fscore_support(
         y_true,
         y_pred,
@@ -30,6 +33,7 @@ def causal_edge_precision(
     predicted_edges: Iterable[Tuple[str, str, str]],
     gold_edges: Iterable[Tuple[str, str, str]],
 ) -> float:
+    """Calculate precision of predicted causal edges."""
     predicted_set = set(predicted_edges)
     gold_set = set(gold_edges)
 
@@ -41,10 +45,12 @@ def causal_edge_precision(
 
 
 def early_warning_accuracy(y_true: Sequence[str], y_pred: Sequence[str]) -> float:
+    """Calculate accuracy of early warning predictions."""
     return round(float(accuracy_score(y_true, y_pred)), 4)
 
 
 def user_understanding_rate(scores: Sequence[float], threshold: float = 4.0) -> float:
+    """Calculate user understanding rate based on scores."""
     if not scores:
         return 0.0
     passed = sum(score >= threshold for score in scores)

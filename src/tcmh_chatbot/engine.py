@@ -1,3 +1,5 @@
+"""Main chatbot engine orchestrating NLP, graph, and risk prediction."""
+
 from __future__ import annotations
 
 import uuid
@@ -5,18 +7,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
-from tcmh_chatbot.core.config import load_model_config, load_risk_rules, project_root
-from tcmh_chatbot.core.schemas import (
+from tcmh_chatbot.config import load_model_config, load_risk_rules, project_root
+from tcmh_chatbot.emotion import EmotionDetector
+from tcmh_chatbot.extractors import SymptomTriggerExtractor
+from tcmh_chatbot.graph import TPCGBuilder, XAIVisualizer
+from tcmh_chatbot.predictor import RuleBasedRiskPredictor
+from tcmh_chatbot.schemas import (
     ConversationTurn,
     ExtractionResult,
     ProcessResult,
     ProcessTurnRequest,
 )
-from tcmh_chatbot.graph.tpcg_builder import TPCGBuilder
-from tcmh_chatbot.graph.xai_visualizer import XAIVisualizer
-from tcmh_chatbot.nlp.emotion_detector import EmotionDetector
-from tcmh_chatbot.nlp.symptom_trigger_extractor import SymptomTriggerExtractor
-from tcmh_chatbot.prediction.rule_based_predictor import RuleBasedRiskPredictor
 
 
 class TemporalCausalChatbot:
@@ -37,6 +38,7 @@ class TemporalCausalChatbot:
         self.visualizer = XAIVisualizer()
 
     def process_turn(self, request: ProcessTurnRequest) -> ProcessResult:
+        """Process a single conversation turn."""
         timestamp = request.timestamp or datetime.utcnow()
         turn_id = request.turn_id or f"turn_{uuid.uuid4().hex[:10]}"
 
@@ -71,14 +73,17 @@ class TemporalCausalChatbot:
         return ProcessResult(turn=turn, extraction=extraction, risk=risk, graph_stats=graph_stats)
 
     def get_user_graph(self, user_id: str) -> Dict[str, Any]:
+        """Get the serialized graph for a user."""
         return self.graph_builder.to_dict(user_id)
 
     def export_user_graph_json(self, user_id: str, output_path: Path | None = None) -> Path:
+        """Export user's graph as JSON."""
         graph_payload = self.graph_builder.to_dict(user_id)
         destination = output_path or project_root() / "outputs" / f"tpcg_{user_id}.json"
         return self.visualizer.write_json(graph_payload, destination)
 
     def export_user_xai_html(self, user_id: str, output_path: Path | None = None) -> Path:
+        """Export user's graph as interactive HTML visualization."""
         graph = self.graph_builder.get_graph(user_id)
         destination = output_path or project_root() / "outputs" / f"tpcg_{user_id}.html"
         return self.visualizer.render_html(graph, destination)

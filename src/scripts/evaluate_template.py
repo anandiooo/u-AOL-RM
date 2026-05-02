@@ -4,12 +4,12 @@ import sys
 from pathlib import Path
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC_PATH = PROJECT_ROOT / "src"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SRC_PATH = Path(__file__).resolve().parents[1]
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from tcmh_chatbot.evaluation.metrics import (
+from tcmh_chatbot.metrics import (
     causal_edge_precision,
     classification_metrics,
     early_warning_accuracy,

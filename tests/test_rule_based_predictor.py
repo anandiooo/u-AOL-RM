@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from tcmh_chatbot.core.schemas import ExtractionResult, GraphStats
-from tcmh_chatbot.prediction.rule_based_predictor import RuleBasedRiskPredictor
+from tcmh_chatbot.predictor import RuleBasedRiskPredictor
+from tcmh_chatbot.schemas import ExtractionResult, GraphStats
 
 
 def test_rule_based_predictor_flags_medium_or_high_risk() -> None:

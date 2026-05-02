@@ -15,8 +15,8 @@ SRC_PATH = PROJECT_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from tcmh_chatbot.chatbot.engine import TemporalCausalChatbot
-from tcmh_chatbot.core.schemas import ProcessTurnRequest
+from tcmh_chatbot.engine import TemporalCausalChatbot
+from tcmh_chatbot.schemas import ProcessTurnRequest
 
 
 def _init_state() -> None:
@@ -42,7 +42,7 @@ def _process_turn(user_id: str, text: str, timestamp: str | None = None, turn_id
 
 
 def _load_sample_conversations(user_id: str) -> int:
-    sample_path = PROJECT_ROOT / "data" / "sample" / "sample_conversations.jsonl"
+    sample_path = PROJECT_ROOT / "src" / "data" / "sample" / "sample_conversations.jsonl"
     if not sample_path.exists():
         return 0
 
@@ -83,12 +83,20 @@ def _risk_color(level: str) -> str:
 
 
 def _render_dashboard() -> None:
+    # --- Page Config ---
     st.set_page_config(page_title="IMPLIKASI | Causal Mental Health Bot", layout="wide")
+<<<<<<< HEAD
     st.title("IMPLIKASI Insight Engine")
     st.caption("A 'Detective' Causal Mental Health Support System. Instead of just reacting, IMPLIKASI silently maps out the root cause (Triggers), symptoms, and crash outs.")
+=======
+    
+    st.title("🤖 IMPLIKASI Insight Engine")
+    st.markdown("A 'Detective' Causal Mental Health Support System. Instead of just reacting, IMPLIKASI silently maps out the root cause (Triggers), mechanisms, and crashes (Symptoms).")
+>>>>>>> 9228b66 (chore: refactor code structure, remove readme)
 
+    # --- Sidebar Inputs ---
     with st.sidebar:
-        st.header("Session Settings")
+        st.header("Configuration")
         user_id = st.text_input("User ID", value=st.session_state.active_user_id)
         st.session_state.active_user_id = user_id.strip() or "student_01"
 
@@ -104,21 +112,55 @@ def _render_dashboard() -> None:
             st.session_state.turn_history = []
             st.rerun()
 
-    # Structure into columns for a dashboard feel
-    main_col, side_col = st.columns([2, 1])
+        st.markdown("---")
+        st.header("Analysis")
+        
+        latest = _latest_for_user(st.session_state.active_user_id)
+        if latest:
+            st.subheader("Current Risk Assesment")
+            risk_score = float(latest["risk"]["score"])
+            risk_level = str(latest["risk"]["level"])
+            st.metric("Risk Level", risk_level.upper())
+            st.metric("Risk Score", f"{risk_score:.2f}")
+            st.progress(min(max(risk_score, 0.0), 1.0))
+            st.markdown(
+                f"<span style='color:{_risk_color(risk_level)}; font-weight:bold;'>Top reasons contributing to risk:</span>",
+                unsafe_allow_html=True,
+            )
+            for reason in latest["risk"].get("reasons", []):
+                st.markdown(f"- {reason}")
 
-    with main_col:
-        st.subheader("Conversation")
+            st.divider()
+
+            st.subheader("Entity Extraction Summary")
+            extraction = latest["extraction"]
+            stat1, stat2 = st.columns(2)
+            stat1.metric("Emotion", extraction["emotion"].title())
+            stat2.metric("Nodes Extracted", latest["graph_stats"]["node_count"])
+
+            st.markdown("<span style='color:#dc2626; font-weight:bold;'>Root Cause (Triggers)</span>", unsafe_allow_html=True)
+            for item in extraction["triggers"] or ["*none*"]: st.markdown(f"- {item}")
+
+            st.markdown("<span style='color:#d97706; font-weight:bold;'>Mechanisms</span>", unsafe_allow_html=True)
+            for item in extraction["mechanisms"] or ["*none*"]: st.markdown(f"- {item}")
+
+            st.markdown("<span style='color:#2563eb; font-weight:bold;'>Symptoms (Crash)</span>", unsafe_allow_html=True)
+            for item in extraction["symptoms"] or ["*none*"]: st.markdown(f"- {item}")
+        else:
+            st.info("Start chatting to see risk assessment and extraction details.")
+
+    # --- Main Logic ---
+    tab_chat, tab_graph = st.tabs(["💬 Chat", "📊 Graph & Explanation"])
+
+    with tab_chat:
+        # 2. Chat Interface
         history = _history_for_user(st.session_state.active_user_id)
-
-        # Display chat history
         for item in history:
             with st.chat_message("user"):
-                st.write(item["turn"]["text"])
+                st.markdown(item["turn"]["text"])
             with st.chat_message("assistant"):
                 emo = item["extraction"]["emotion"]
-                risk_lvl = item["risk"]["level"]
-
+                
                 st.markdown("**IMPLIKASI (Silent Processing):**")
 
                 if item["extraction"]["triggers"]:
@@ -130,18 +172,19 @@ def _render_dashboard() -> None:
                 st.markdown(f"- **Detects Emotion:** `{emo.upper()}`")
                 st.markdown("- ***Logs Node & Analyzes Time Lag, Creates Causal Link!***")
 
-        # Chat input
+        # 3. Handling User Input
         if prompt := st.chat_input("I'm so stressed. My boss just dumped a huge project..."):
             with st.chat_message("user"):
-                st.write(prompt)
+                st.markdown(prompt)
 
-            processed = _process_turn(st.session_state.active_user_id, prompt)
             with st.chat_message("assistant"):
-                emo = processed["extraction"]["emotion"]
-                risk_lvl = processed["risk"]["level"]
+                with st.spinner("Processing..."):
+                    processed = _process_turn(st.session_state.active_user_id, prompt)
+                    emo = processed["extraction"]["emotion"]
 
-                st.markdown("**IMPLIKASI (Silent Processing):**")
+                    st.markdown("**IMPLIKASI (Silent Processing):**")
 
+<<<<<<< HEAD
                 if processed["extraction"]["triggers"]:
                     st.markdown(f"- **Detects Entity / Event:** `{', '.join(processed['extraction']['triggers'])}`")
                 if processed["extraction"]["crashouts"]:
@@ -152,7 +195,18 @@ def _render_dashboard() -> None:
                 st.markdown("- ***Logs Node & Analyzes Time Lag, Creates Causal Link!***")
 
         st.divider()
+=======
+                    if processed["extraction"]["triggers"]:
+                        st.markdown(f"- **Detects Entity / Event:** `{', '.join(processed['extraction']['triggers'])}`")
+                    if processed["extraction"]["mechanisms"]:
+                        st.markdown(f"- **Detects Mechanism:** `{', '.join(processed['extraction']['mechanisms'])}`")
+                    if processed["extraction"]["symptoms"]:
+                        st.markdown(f"- **Detects Symptom:** `{', '.join(processed['extraction']['symptoms'])}`")
+                    st.markdown(f"- **Detects Emotion:** `{emo.upper()}`")
+                    st.markdown("- ***Logs Node & Analyzes Time Lag, Creates Causal Link!***")
+>>>>>>> 9228b66 (chore: refactor code structure, remove readme)
 
+    with tab_graph:
         st.subheader("Temporal Personal Causal Graph")
         graph_payload = st.session_state.engine.get_user_graph(st.session_state.active_user_id)
         if graph_payload["nodes"]:
@@ -173,6 +227,7 @@ def _render_dashboard() -> None:
         else:
             st.info("No data yet. Start a conversation to build the causal graph.")
 
+<<<<<<< HEAD
     with side_col:
         st.subheader("Current Risk Assesment")
         latest = _latest_for_user(st.session_state.active_user_id)
@@ -230,6 +285,8 @@ def _render_dashboard() -> None:
         else:
             st.info("Process a turn to view extraction details.")
 
+=======
+>>>>>>> 9228b66 (chore: refactor code structure, remove readme)
 
 def main() -> None:
     _init_state()
